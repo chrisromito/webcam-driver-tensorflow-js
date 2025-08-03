@@ -7,7 +7,8 @@ import {
 
 } from '@mediapipe/tasks-vision'
 import type { Detection } from '@mediapipe/tasks-vision'
-
+import { DetectionState } from './detectionState'
+import { IStatus } from './types'
 
 export type TFaceDetector = {
     vision: any,
@@ -54,43 +55,56 @@ function addClass(el: HTMLElement) {
 }
 
 
-export function displayVideoDetections(video: HTMLVideoElement, liveView: HTMLElement, detections: Detection[]) {
+export function displayVideoDetections(video: HTMLVideoElement, liveView: HTMLElement, detections: Detection[], detectionState: DetectionState) {
     [...liveView.querySelectorAll(`.${REMOVE_CLASS}`)].forEach(predictionEl => {
         liveView.removeChild(predictionEl)
     })
 
+    if (!detections.length) {
+        return
+    }
+    const detection = detections[0]
+
     // Iterate through predictions and draw them to the live view
-    for (let detection of detections) {
-        const { categories, boundingBox } = detection
+    const { categories, boundingBox } = detection
 
-        if (categories && boundingBox) {
-            const p = document.createElement("p")
-            addClass(p)
-            const confidence = Math.round(categories[0].score * 100)
-            p.innerText = `Confidence: ${confidence}%`
+    if (categories && boundingBox) {
+        const p = document.createElement("p")
+        addClass(p)
+        const confidence = Math.round(categories[0].score * 100)
+        p.innerText = `Confidence: ${confidence}%`
 
-            const left = video.offsetWidth - boundingBox.width - boundingBox.originX
-            const top = boundingBox.originY - 30
-            const width = boundingBox.width - 10
-            const style = `left: ${left}px; top: ${top}px; width: ${width} px`
-            p.style = style
+        const left = video.offsetWidth - boundingBox.width - boundingBox.originX
+        const top = boundingBox.originY - 30
+        const width = boundingBox.width - 10
+        const style = `left: ${left}px; top: ${top}px; width: ${width} px`
+        p.style = style
 
-            const highlighter = document.createElement("div")
-            addClass(highlighter)
-            highlighter.classList.add('highlighter')
-            highlighter.style = style
-            liveView.appendChild(highlighter)
-            liveView.appendChild(p)
-        }
+        const highlighter = document.createElement("div")
+        addClass(highlighter)
+        highlighter.classList.add('highlighter')
+        highlighter.style = style
+        liveView.appendChild(highlighter)
+        liveView.appendChild(p)
 
-        // Store drawn objects in memory so they are queued to delete at next call
-        for (let keypoint of detection.keypoints) {
-            const keypointEl = document.createElement("span")
-            addClass(keypointEl)
-            keypointEl.classList.add('key-point')
-            keypointEl.style.top = `${keypoint.y * video.offsetHeight - 3}px`
-            keypointEl.style.left = `${video.offsetWidth - keypoint.x * video.offsetWidth - 3}px`
-            liveView.appendChild(keypointEl)
-        }
+    }
+
+    // Store drawn objects in memory so they are queued to delete at next call
+    for (let keypoint of detection.keypoints) {
+        const keypointEl = document.createElement("span")
+        addClass(keypointEl)
+        keypointEl.classList.add('key-point')
+        keypointEl.style.top = `${keypoint.y * video.offsetHeight - 3}px`
+        keypointEl.style.left = `${video.offsetWidth - keypoint.x * video.offsetWidth - 3}px`
+        liveView.appendChild(keypointEl)
+        // console.log(JSON.stringify(keypoint, null, 4))
+    }
+
+    if (detectionState.state.config.center !== 0) {
+        const centerEl = document.createElement('div')
+        addClass(centerEl)
+        centerEl.classList.add('center')
+        centerEl.style.left = `${video.offsetWidth - detectionState.state.config.center}px`
+        liveView.appendChild(centerEl)
     }
 }

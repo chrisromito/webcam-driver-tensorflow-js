@@ -13,6 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+* {
+  box-sizing: content-box;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -35,13 +39,16 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
-
+/* 
 #app {
-  max-width: 1280px;
+  height: 100vh;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100vw;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
+} */
 
 .logo {
   height: 6em;
@@ -74,6 +81,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   background-color: #1a1a1a;
+  color: white;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -104,58 +112,76 @@ button:focus-visible {
 
 
 .app-container {
-  display: block;
-  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100vw;
   max-width: 100%;
-  height: 100vh
+  height: 100vh;
+  max-height: 100%;
 }
 
-.input-container {
-  display: block;
+.input-container, .game-container {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+
   width: 100%;
   max-width: 100%;
   position: relative;
+  max-height: 50vh;
 }
 
+.webcam-container {
+
+}
 .webcam-input, .steps {
-  display: block;
+  /* display: block;
   width: 50%;
   max-width: 50%;
-  float: left;
+  float: left; */
   position: relative;
+}
+
+.steps {
+  display: inline-flex;
+  flex-wrap: wrap;
 }
 
 .steps .step {
   width: 100%;
-
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-content: center;
 }
 
 .webcam-input {
-  position: relative;
-  /* width: 50%; */
-  display: block;
-  float: left;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
   width: 48%;
-  margin: 2% 1%;
   cursor: pointer;
-  height: auto;
+  height: 50vh;
   max-height: 100vh;
 }
 
 
-video {
-  clear: both;
-  display: block;
+.webcam-input video {
+  /* display: block; */
   transform: rotateY(180deg);
   -webkit-transform: rotateY(180deg);
   -moz-transform: rotateY(180deg);
   position: relative;
   width: 100%;
   max-width: 100%;
-  height: 30vh;
+  height: calc(50vh - 25px);
+  max-height: calc(50vh - 25px);
 }
 
-
+/*
 .webcam-input .highlighter, .webcam-input .key-point {
   position: absolute;
   padding-bottom: 5px;
@@ -167,11 +193,19 @@ video {
   font-size: 12px;
   margin: 0;
 }
+  */
 
-.highlighter {
+.webcam-input .highlighter {
+  /* position: relative; */
+  /* display: flex; */
+  /* padding-bottom: 5px; */
+  color: white;
+  z-index: 2;
+  font-size: 1rem;
+
   background: rgba(0, 255, 0, 0.25);
   border: 1px dashed #fff;
-  z-index: 1;
+  z-index: 2;
   position: absolute;
 }
 
@@ -184,6 +218,15 @@ video {
   /* border: 1px solid #ffffff; */
   border-radius: 50%;
   display: block;
+}
+
+.webcam-input .center {
+  position: absolute;
+  height: 100%;
+  width: 3px;
+  background-color: rgba(0, 255, 0, 0.5);
+  z-index: 2;
+  content: '';
 }
 
 

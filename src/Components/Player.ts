@@ -65,7 +65,9 @@ export class Player {
 
 		this.p3d = new Phaser3D(this.scene, { fov: 35, x: 0, y: 7, z: -20, antialias: false });
 		this.p3d.view.setDepth(20);
-		this.p3d.addGLTFModel(modelKey);
+		const resourcePath =  new URL('/public/3d/car.glb', import.meta.url).href
+
+		this.p3d.addGLTFModel(modelKey, resourcePath, (...args)=> args);
 
 		this.p3d.camera.lookAt(0, 5.1, 0);
 
@@ -167,11 +169,12 @@ export class Player {
 		this.smokeEmitterLeft.setPosition(particleX - 13, this.scene.scale.gameSize.height - 5 - this.pitch * 15 - (this.turn > 0 ? this.turn * 7 : 0));
 		this.smokeEmitterRight.setPosition(particleX + 13, this.scene.scale.gameSize.height - 5 - this.pitch * 15 + (this.turn < 0 ? this.turn * 7 : 0));
 
-		this.smokeEmitterLeft.setSpeed(particleSpeed);
-		this.smokeEmitterRight.setSpeed(particleSpeed);
+		this.smokeEmitterLeft.speed = particleSpeed
+		this.smokeEmitterRight.speed = particleSpeed
+		const angle = this.turn < 0 ? -15 : 195
 
-		this.smokeEmitterLeft.setAngle(particleAngle);
-		this.smokeEmitterRight.setAngle(particleAngle);
+		this.smokeEmitterLeft.setAngle(angle);
+		this.smokeEmitterRight.setAngle(angle);
 
 		if (this.isOnGravel) {
 			this.smokeEmitterLeft.setFrame(1);
@@ -182,16 +185,16 @@ export class Player {
 		}
 
 		if (this.speed > 300 && Math.abs(this.turn) > 0.66 && !this.smokeEmitterLeft.on) {
-			this.smokeEmitterLeft.on = true;
-			this.smokeEmitterRight.on = true;
+			this.smokeEmitterLeft.start()
+			this.smokeEmitterRight.start()
 			this.screeching = true;
 		} else if (this.speed > 100 && this.isOnGravel) {
-			this.smokeEmitterLeft.on = true;
-			this.smokeEmitterRight.on = true;
+			this.smokeEmitterLeft.start()
+			this.smokeEmitterRight.start()
 			this.screeching = false;
 		} else if (this.speed < 400 && this.accelerating) {
-			this.smokeEmitterLeft.on = true;
-			this.smokeEmitterRight.on = true;
+			this.smokeEmitterLeft.start()
+			this.smokeEmitterRight.start()
 			this.screeching = true;
 		} else {
 			this.smokeEmitterLeft.stop();

@@ -1,5 +1,5 @@
 import 'phaser'
-import { Scene, PerspectiveCamera } from 'three/webgpu'
+import { Scene, PerspectiveCamera, CubeTextureLoader } from 'three/webgpu'
 import { WebGPURenderer } from 'three/webgpu'
 import type { GameScene } from '../scenes/GameScene'
 import * as THREE from 'three/webgpu'
@@ -53,9 +53,9 @@ export class Phaser3D extends Phaser.Events.EventEmitter {
         this.view.render = () => {
 
             //  This is important to retain GL state between renders
-            this.renderer.state.reset()
+            // this.renderer.state.reset()
 
-            this.renderer.render(this.scene, this.camera)
+            this.renderer.renderAsync(this.scene, this.camera)
 
         }
 
@@ -134,8 +134,8 @@ export class Phaser3D extends Phaser.Events.EventEmitter {
     }
 
     enableGamma(input = true, output = true) {
-        this.renderer.gammaInput = input
-        this.renderer.gammaOutput = output
+        // this.renderer.gammaInput = input
+        // this.renderer.gammaOutput = output
 
         return this
     }
@@ -160,7 +160,7 @@ export class Phaser3D extends Phaser.Events.EventEmitter {
             path = path.concat('/')
         }
 
-        return new THREE.CubeTextureLoader().setPath(path).load([right, left, up, down, back, front])
+        return new CubeTextureLoader().setPath(path).load([right, left, up, down, back, front])
     }
 
     castShadow(...meshes) {
