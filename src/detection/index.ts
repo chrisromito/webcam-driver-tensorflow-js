@@ -35,7 +35,7 @@ export async function initializeFaceDetector(): Promise<TFaceDetector> {
 
 
 export async function enableWebcam(video: HTMLVideoElement): Promise<MediaStream> {
-    const constraints = { video: true }
+    const constraints = { video: { width: 500, height: 400 }, audio: false }
     const stream = await navigator.mediaDevices.getUserMedia(constraints)
     video.srcObject = stream
     return stream
@@ -106,5 +106,44 @@ export function displayVideoDetections(video: HTMLVideoElement, liveView: HTMLEl
         centerEl.classList.add('center')
         centerEl.style.left = `${video.offsetWidth - detectionState.state.config.center}px`
         liveView.appendChild(centerEl)
+    }
+}
+
+
+export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideoElement, detections: Detection[], detectionState: DetectionState) {
+    const width = 500
+    const height = 400
+    ctx.drawImage(video, 0, 0, width, height)
+
+    if (!detections.length) {
+        return
+    }
+    const detection: Detection = detections[0]
+    const { categories, boundingBox, keypoints } = detection
+    if (categories) {
+        const confidence = Math.round(categories[0].score * 100)
+        const label = `Confidence: ${confidence}%`
+        ctx.font = '30px sans-serif'
+        // ctx.clearRect(0, 0, width, height)
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'
+        ctx.fillText(label, 0, height - 30)
+    }
+    keypoints.forEach(keypoint => {
+        ctx.globalAlpha = 1.0
+        ctx.beginPath()
+        ctx.lineWidth = 4
+        ctx.strokeStyle = 'red'
+        ctx.ellipse(keypoint.x, keypoint.y, 5, 5, 0, 0, 0)
+        ctx.stroke()
+    })
+
+    
+    if (boundingBox) {
+        ctx.beginPath()
+        ctx.lineWidth = 4
+        ctx.strokeStyle = 'green'
+        ctx.globalAlpha = 0.2
+        ctx.strokeRect(boundingBox.originX, boundingBox.originY, boundingBox.width, boundingBox.height)
+        ctx.globalAlpha = 1.0
     }
 }

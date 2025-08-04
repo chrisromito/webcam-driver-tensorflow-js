@@ -1,5 +1,5 @@
 import './style.css'
-import { initializeFaceDetector, enableWebcam, detect, displayVideoDetections } from './detection'
+import { initializeFaceDetector, enableWebcam, detect, displayVideoDetections, renderDetections } from './detection'
 import { run } from './game'
 import { DetectionState } from './detection/detectionState'
 import { IStatus } from './detection/types'
@@ -10,6 +10,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     <div class="input-container">
       <div class="webcam-input">
         <div id="live-view">
+          <canvas id="canvas" class="webcam-render"  width="500" height="400"></canvas>
           <video id="video" class="webcam-visual" autoplay playsinline></video>
         </div>
       </div>
@@ -86,7 +87,7 @@ async function main() {
     } else {
         console.log('awaiting config completion, displaying detection results in the meantime')
         const detections = detect(video, detector)
-        displayVideoDetections(video, liveView, detections, detectionState)
+        renderDetections(ctx, video, detections, detectionState)
     }
   }
   console.log('Booting game...')
@@ -181,13 +182,18 @@ function showStep(value: number) {
 /**
  * MAIN DETECTION LOOP
  */
+
+const canvas = document.getElementById('canvas')
+// @ts-ignore
+const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
+
 async function detectionLoop(detector, loopCounter: number = 0) {
   const detections = detect(video, detector)
   detectionState.state.detection = detections
   detectionState.setInputs()
   await sleep(50)
   if (loopCounter > 0) {
-    displayVideoDetections(video, liveView, detections, detectionState)
+    renderDetections(ctx, video, detections, detectionState)
   }
 }
 
