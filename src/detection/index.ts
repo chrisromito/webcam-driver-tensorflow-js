@@ -128,12 +128,22 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
         ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'
         ctx.fillText(label, 0, height - 30)
     }
+    ctx.globalAlpha = 0.2
+
+    const endAngle = 2 * Math.PI
+    const radius = width / 10
     keypoints.forEach(keypoint => {
-        ctx.globalAlpha = 1.0
+        // ctx.globalAlpha = 1.0
+        // ctx.beginPath()
+        // ctx.lineWidth = 4
+        // ctx.strokeStyle = 'red'
+        // ctx.ellipse(keypoint.x, keypoint.y, 5, 5, 0, 0, 0)
+        // ctx.stroke()
         ctx.beginPath()
+        ctx.arc(keypoint.x, keypoint.y, radius, 0, endAngle)
+        
         ctx.lineWidth = 4
         ctx.strokeStyle = 'red'
-        ctx.ellipse(keypoint.x, keypoint.y, 5, 5, 0, 0, 0)
         ctx.stroke()
     })
 
@@ -142,8 +152,7 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
         ctx.beginPath()
         ctx.lineWidth = 4
         ctx.strokeStyle = 'green'
-        ctx.globalAlpha = 0.2
         ctx.strokeRect(boundingBox.originX, boundingBox.originY, boundingBox.width, boundingBox.height)
-        ctx.globalAlpha = 1.0
     }
+    ctx.globalAlpha = 1.0
 }
