@@ -1,4 +1,6 @@
-import 'phaser';
+import * as Phaser from 'phaser';
+import { enable3d, Canvas } from '@enable3d/phaser-extension'
+
 import './css/styles.css';
 import { BootScene } from './scenes/BootScene';
 import { gameConfig } from './config/GameConfig';
@@ -17,9 +19,22 @@ export class DriverGame extends Phaser.Game {
 }
 
 // start the game
-export function run(): DriverGame {
-  const game = new DriverGame(gameConfig);
+export function run(): Promise<DriverGame> {
+  const config = {
+    ...gameConfig,
+    ...Canvas()
+  }
 
+  return new Promise((resolve, reject)=> {
+    enable3d(()=> {
+      const game = new DriverGame(config);
+      // game.scene.add('BootScene', BootScene, true);
+      // game.scene.add('LoadScene', LoadScene, false);
+      game.scene.add('GameScene', GameScene, false);
+      game.scene.add('RaceUiScene', RaceUiScene, false);
+      return resolve(game)
+    })
+  })
   // set up stats
   // if (window.env.buildType !== 'production') {
     // const Stats = require('stats-js');
@@ -34,9 +49,4 @@ export function run(): DriverGame {
     // game.events.on('postrender', () => stats.end());
   // }
 
-  game.scene.add('BootScene', BootScene, true);
-  game.scene.add('LoadScene', LoadScene, false);
-  game.scene.add('GameScene', GameScene, false);
-  game.scene.add('RaceUiScene', RaceUiScene, false);
-  return game
 }

@@ -1,7 +1,9 @@
 import { GameScene } from '../scenes/GameScene';
-import { Phaser3D } from '../libs/Phaser3D';
+// import { Phaser3D } from '../libs/Phaser3D';
 import { gameSettings } from '../config/GameSettings';
 import { Util } from './Util';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
+import { enable3d, Scene3D, Canvas, ExtendedObject3D, THREE} from '@enable3d/phaser-extension'
 
 const HALFPI = Math.PI / 2;
 
@@ -9,7 +11,7 @@ export class Player {
 	public position: Phaser.Math.Vector3;
 	public sprite: Phaser.GameObjects.Rectangle;
 	public scene: GameScene;
-	public p3d: Phaser3D;
+	// public p3d: Phaser3D;
 	public model: any;
 	// public smokeParticles: Phaser.GameObjects.Particles.ParticleEmitterManager;
 	public smokeEmitterLeft: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -63,21 +65,25 @@ export class Player {
 		this.smokeEmitterLeft = this.scene.add.particles(particleSettings.x, particleSettings.y, 'particles', particleSettings)
 		this.smokeEmitterRight = this.scene.add.particles(particleSettings.x, particleSettings.y, 'particles', particleSettings)
 
-		this.p3d = new Phaser3D(this.scene, { fov: 35, x: 0, y: 7, z: -20, antialias: false });
-		this.p3d.view.setDepth(20);
-		const resourcePath =  new URL('/public/3d/car.glb', import.meta.url).href
+		// this.p3d = new Phaser3D(this.scene, { fov: 35, x: 0, y: 7, z: -20, antialias: false });
+		// this.p3d.view.setDepth(20);
+		// const resourcePath =  new URL('/public/3d/car.glb', import.meta.url).href
 
-		this.p3d.addGLTFModel(modelKey, resourcePath, (...args)=> args);
+		// this.p3d.addGLTFModel(modelKey, resourcePath, (...args)=> args);
 
-		this.p3d.camera.lookAt(0, 5.1, 0);
+		// this.p3d.camera.lookAt(0, 5.1, 0);
 
-		this.p3d.add.hemisphereLight({ skyColor: 0xefefff, groundColor: 0x111111, intensity: 2 });
-		this.p3d.on('loadgltf', (gltf: any, model: any) => {
-			model.rotateY(HALFPI);
-			model.position.set(0, 0, 0);
-			model.scale.set(1, 1, 1);
-			this.model = model;
-		});
+		// this.p3d.add.hemisphereLight({ skyColor: 0xefefff, groundColor: 0x111111, intensity: 2 });
+		// this.p3d.on('loadgltf', (gltf: any, model: any) => {
+		// 	model.rotateY(HALFPI);
+		// 	model.position.set(0, 0, 0);
+		// 	model.scale.set(1, 1, 1);
+		// 	this.model = model;
+		// });
+	}
+
+	public addGltfModel(key, path, callback?) {
+
 	}
 
 	public get x(): number { return this.position.x; }
@@ -107,7 +113,7 @@ export class Player {
 			this.turnVector.y = HALFPI + -this.turn;
 			this.turnVector.x = Phaser.Math.Clamp(this.pitch, -0.3, 0.3);
 			this.model.rotation.setFromVector3(this.turnVector);
-			this.p3d.camera.rotation.z = Math.PI + Phaser.Math.DegToRad(this.scene.cameraAngle);
+			// this.p3d.camera.rotation.z = Math.PI + Phaser.Math.DegToRad(this.scene.cameraAngle);
 
 			if (this.pitch > 0) {
 				this.model.position.y = Util.interpolate(this.model.position.y, -this.pitch * 3, 0.33);

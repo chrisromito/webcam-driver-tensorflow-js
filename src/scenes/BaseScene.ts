@@ -1,5 +1,4 @@
-import { DriverGame } from '../game';
-import { Game } from 'phaser'
+import * as Phaser from 'phaser'
 
 export class BaseScene extends Phaser.Scene {
 	constructor(key: string, options?: any) {
