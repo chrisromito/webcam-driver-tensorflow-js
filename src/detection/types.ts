@@ -26,9 +26,18 @@ export type IInput = {
     center: number
 }
 
+export type IConfig = IInput & {
+    width: number,
+    height: number,
+    centerY: number,
+    xCenterRange: [number, number],
+    yCenterRange: [number, number],
+    mirror: boolean
+}
+
 export type IDetectionState = {
     status: IStat,
     detection: Detection[]
-    config: IInput,
+    config: IConfig,
     input: IInput
 }

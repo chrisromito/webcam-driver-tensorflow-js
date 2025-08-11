@@ -33,6 +33,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 h1 {
@@ -122,7 +123,7 @@ button:focus-visible {
   max-height: 100%;
 }
 
-.input-container, .game-container {
+.input-container {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-between;
@@ -130,12 +131,26 @@ button:focus-visible {
   width: 100%;
   max-width: 100%;
   position: relative;
-  max-height: 50vh;
+  height: 200px;
+  max-height: 25vh;
 }
 
-.webcam-container {
-
+.game-row {
+  height: calc(100vh - 300px);
+  max-height: 100%;
+  width: 100vw;
+  max-width: 100%;
+  overflow: hidden;
 }
+
+.game-container {
+  position: relative;
+  height: 100%;
+  max-height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
 .webcam-input, .steps {
   /* display: block;
   width: 50%;
@@ -185,8 +200,8 @@ button:focus-visible {
 }
 
 .webcam-input canvas {
-  width: 500px;
-  height: 400px;
+  /* width: 500px; */
+  /* height: 400px; */
   max-width: 100%;
   max-height: 100%;
   position: relative;

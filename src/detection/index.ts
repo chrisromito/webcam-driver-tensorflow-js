@@ -34,8 +34,8 @@ export async function initializeFaceDetector(): Promise<TFaceDetector> {
 }
 
 
-export async function enableWebcam(video: HTMLVideoElement): Promise<MediaStream> {
-    const constraints = { video: { width: 500, height: 400 }, audio: false }
+export async function enableWebcam(video: HTMLVideoElement, width: number, height: number): Promise<MediaStream> {
+    const constraints = { video: { width, height }, audio: false }
     const stream = await navigator.mediaDevices.getUserMedia(constraints)
     video.srcObject = stream
     return stream
@@ -48,105 +48,66 @@ export function detect(video: HTMLVideoElement, { faceDetector }: TFaceDetector)
 }
 
 
-const REMOVE_CLASS = 'prediction'
-
-function addClass(el: HTMLElement) {
-    el.classList.add(REMOVE_CLASS)
-}
-
-
-export function displayVideoDetections(video: HTMLVideoElement, liveView: HTMLElement, detections: Detection[], detectionState: DetectionState) {
-    [...liveView.querySelectorAll(`.${REMOVE_CLASS}`)].forEach(predictionEl => {
-        liveView.removeChild(predictionEl)
-    })
-
-    if (!detections.length) {
+export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideoElement, detections: Detection[], detectionState: DetectionState) {
+    const canvas = ctx.canvas
+    if (!canvas) {
         return
     }
-    const detection = detections[0]
-
-    // Iterate through predictions and draw them to the live view
-    const { categories, boundingBox } = detection
-
-    if (categories && boundingBox) {
-        const p = document.createElement("p")
-        addClass(p)
-        const confidence = Math.round(categories[0].score * 100)
-        p.innerText = `Confidence: ${confidence}%`
-
-        const left = video.offsetWidth - boundingBox.width - boundingBox.originX
-        const top = boundingBox.originY - 30
-        const width = boundingBox.width - 10
-        const style = `left: ${left}px; top: ${top}px; width: ${width} px`
-        p.style = style
-
-        const highlighter = document.createElement("div")
-        addClass(highlighter)
-        highlighter.classList.add('highlighter')
-        highlighter.style = style
-        liveView.appendChild(highlighter)
-        liveView.appendChild(p)
-
-    }
-
-    // Store drawn objects in memory so they are queued to delete at next call
-    for (let keypoint of detection.keypoints) {
-        const keypointEl = document.createElement("span")
-        addClass(keypointEl)
-        keypointEl.classList.add('key-point')
-        keypointEl.style.top = `${keypoint.y * video.offsetHeight - 3}px`
-        keypointEl.style.left = `${video.offsetWidth - keypoint.x * video.offsetWidth - 3}px`
-        liveView.appendChild(keypointEl)
-        // console.log(JSON.stringify(keypoint, null, 4))
-    }
-
-    if (detectionState.state.config.center !== 0) {
-        const centerEl = document.createElement('div')
-        addClass(centerEl)
-        centerEl.classList.add('center')
-        centerEl.style.left = `${video.offsetWidth - detectionState.state.config.center}px`
-        liveView.appendChild(centerEl)
-    }
-}
-
-
-export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideoElement, detections: Detection[], detectionState: DetectionState) {
-    const width = 500
-    const height = 400
+    const width = canvas.offsetWidth
+    const height = canvas.offsetHeight
     ctx.drawImage(video, 0, 0, width, height)
+
+    
+
+    // Draw vertical center rect (width / 5)
+    ctx.beginPath()
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.33)'
+    const center = width / 2
+    const centerMinX = center - (width * 0.1)
+    const centerLineWidth = width * 0.2
+    ctx.fillRect(
+        centerMinX,
+        0,
+        centerLineWidth,
+        height
+    )
+
+    // Draw horizontal center rect
+    ctx.beginPath()
+    ctx.fillStyle = 'rgba(0, 255, 0, 0.33)'
+    const yCenter = height / 2
+    const centerMinY = yCenter - (height * 0.1)
+    const yLineWidth = height * 0.2
+    ctx.fillRect(
+        0,
+        centerMinY,
+        width,
+        yLineWidth
+    )
 
     if (!detections.length) {
         return
     }
     const detection: Detection = detections[0]
     const { categories, boundingBox, keypoints } = detection
-    if (categories) {
-        const confidence = Math.round(categories[0].score * 100)
-        const label = `Confidence: ${confidence}%`
-        ctx.font = '30px sans-serif'
-        // ctx.clearRect(0, 0, width, height)
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.95)'
-        ctx.fillText(label, 0, height - 30)
-    }
-    ctx.globalAlpha = 0.2
+    
 
-    const endAngle = 2 * Math.PI
-    const radius = width / 10
-    keypoints.forEach(keypoint => {
-        // ctx.globalAlpha = 1.0
-        // ctx.beginPath()
-        // ctx.lineWidth = 4
-        // ctx.strokeStyle = 'red'
-        // ctx.ellipse(keypoint.x, keypoint.y, 5, 5, 0, 0, 0)
-        // ctx.stroke()
-        ctx.beginPath()
-        ctx.arc(keypoint.x, keypoint.y, radius, 0, endAngle)
-        
-        ctx.lineWidth = 4
-        ctx.strokeStyle = 'red'
-        ctx.stroke()
+    const inputs = detectionState.state.input
+    const inputTexts = [
+        `Left: ${inputs.left}`,
+        `Right: ${inputs.right}`,
+        `Up: ${inputs.up}`,
+        `Down: ${inputs.down}`
+    ]
+    inputTexts.forEach((value: string, index: number)=> {
+        ctx.font = '12px sans-serif'
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
+        const yOffset = (index + 1) * 15
+        const y = height - yOffset
+        ctx.fillText(value, 5, y)
     })
-
+    
+    ctx.globalAlpha = 0.2
     
     if (boundingBox) {
         ctx.beginPath()
