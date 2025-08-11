@@ -220,7 +220,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     scene.registerAfterRender(function () {
         F = engine.getFps()
 
-        if (map[" "] && D < 15) {
+        if (map[" "] && D < 5) {
             D += 1
         }
 
