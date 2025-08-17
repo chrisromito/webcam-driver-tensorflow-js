@@ -1,10 +1,12 @@
 import './style.css'
+import { Arrows } from './libs/dom'
 import { initializeFaceDetector, enableWebcam, detect, renderDetections } from './detection'
 // import { startGame } from './game'
 import { setup as setupGame } from './carGame'
 import { DetectionState } from './detection/detectionState'
 import { IStatus } from './detection/types'
 // Track generation now handled by TrackLoader module
+
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="app-container">
@@ -15,12 +17,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
           <video id="video" class="webcam-visual" autoplay playsinline></video>
         </div>
       </div>
-      <div id="steps" class="steps">
-        <div id="step-1" class="step hide">
-          <p>
-            Stand Center
-          </p>
-        </div>
+      <div class="input-config">
+        ${Arrows.initial()}
       </div>
     </div>
     <div class="game-row">
@@ -35,7 +33,6 @@ const video: HTMLVideoElement | null = document.getElementById('video')
 // Remove any highlighting from previous frame.
 const liveView: HTMLElement | null = document.getElementById('live-view')
 
-const button = document.getElementById('step-button')
 
 async function main() {
 
@@ -45,6 +42,7 @@ async function main() {
   detectionState.setStatus(IStatus.PENDING)
   const stream = await enableWebcam(video, canvas.offsetWidth, canvas.offsetHeight)
   detectionState.setStatus(IStatus.ACCEPTED)
+  detectionState.setupKeyListeners()
 
   console.log('Initializing face detector...')
   const detector = await initializeFaceDetector()
@@ -97,14 +95,27 @@ async function detectionLoop(detector, loopCounter: number = 0) {
   const detections = detect(video, detector)
   detectionState.state.detection = detections
   detectionState.setInputs()
-  await sleep(50)
+  await nextTick()
   if (loopCounter > 0) {
     // @ts-ignore
     const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
     renderDetections(ctx, video, detections, detectionState)
+  } else {
+    renderArrows(detectionState)
   }
 }
 
+
+function renderArrows(dState: DetectionState) {
+  Arrows.update(dState.state.input)
+}
+
+
+async function nextTick(): Promise<boolean> {
+  return await new Promise((resolve)=> {
+    requestAnimationFrame(()=> resolve(true))
+  })
+}
 
 async function sleep(ms: number) {
   return await new Promise((resolve) => {

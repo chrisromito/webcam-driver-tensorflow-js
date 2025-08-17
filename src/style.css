@@ -40,6 +40,7 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
 /* 
 #app {
   height: 100vh;
@@ -111,7 +112,101 @@ button:focus-visible {
   }
 }
 
+/** 
+* Generics
+*==================*/
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+}
 
+
+.block {
+  display: block;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.i-flex {
+  display: inline-flex;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.no-wrap {
+  flex-wrap: nowrap;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.p1 {
+  padding: 0.25rem;
+}
+
+.p2 {
+  padding: 0.5rem;
+}
+
+.p3 {
+  padding: 0.75rem;
+}
+
+.p4 {
+  padding: 1rem;
+}
+
+
+.row {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.cell {
+  display: flex;
+  padding: 0.5rem;
+}
+
+
+/**
+* App Components
+*==============*/
 .app-container {
   display: flex;
   flex-wrap: wrap;
@@ -126,7 +221,7 @@ button:focus-visible {
 .input-container {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: space-around;
 
   width: 100%;
   max-width: 100%;
@@ -151,12 +246,53 @@ button:focus-visible {
   max-width: 100%;
 }
 
-.webcam-input, .steps {
+.webcam-input,
+.steps {
   /* display: block;
   width: 50%;
   max-width: 50%;
   float: left; */
   position: relative;
+}
+
+.input-config {
+  width: 100%;
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-config .arrows {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.input-config .arrows .arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.input-config .center-arrows {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+
+.arrow-up {
+  transform: rotate(90deg);
+}
+
+.arrow-right {
+  transform: rotate(180deg);
+}
+
+.arrow-down {
+  transform: rotate(270deg);
 }
 
 .steps {
@@ -180,20 +316,8 @@ button:focus-visible {
   width: 48%;
   cursor: pointer;
   height: 50vh;
-  max-height: 100vh;
+  max-height: 100%;
 }
-
-/* 
-.webcam-input video {
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  height: calc(50vh - 25px);
-  max-height: calc(50vh - 25px);
-} */
 
 .webcam-input video {
   display: none;
@@ -206,55 +330,6 @@ button:focus-visible {
   max-height: 100%;
   position: relative;
 }
-
-/*
-.webcam-input .highlighter, .webcam-input .key-point {
-  position: absolute;
-  padding-bottom: 5px;
-  padding-top: 5px;
-  background-color: #007f8b;
-  color: #fff;
-  border: 1px dashed rgba(255, 255, 255, 0.7);
-  z-index: 2;
-  font-size: 12px;
-  margin: 0;
-}
-  */
-
-.webcam-input .highlighter {
-  /* position: relative; */
-  /* display: flex; */
-  /* padding-bottom: 5px; */
-  color: white;
-  z-index: 2;
-  font-size: 1rem;
-
-  background: rgba(0, 255, 0, 0.25);
-  border: 1px dashed #fff;
-  z-index: 2;
-  position: absolute;
-}
-
-.key-point {
-  position: absolute;
-  z-index: 1;
-  width: 3px;
-  height: 3px;
-  background-color: #ff0000;
-  /* border: 1px solid #ffffff; */
-  border-radius: 50%;
-  display: block;
-}
-
-.webcam-input .center {
-  position: absolute;
-  height: 100%;
-  width: 3px;
-  background-color: rgba(0, 255, 0, 0.5);
-  z-index: 2;
-  content: '';
-}
-
 
 .hide {
   display: none;

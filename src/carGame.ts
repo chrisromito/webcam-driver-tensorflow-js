@@ -174,25 +174,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     let boxes = boxesSPS.buildMesh() // mesh of boxes
     boxes.material = new StandardMaterial("", scene)
     boxes.material.alpha = 0.25
-    /*****************************Particles to Show Movement********************************************/
-
-
-
-    /****************************Key Controls************************************************/
-
-    let map = {} //object for multiple key presses
-    scene.actionManager = new ActionManager(scene)
-
-    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyDownTrigger, function (evt) {
-        map[evt.sourceEvent.key] = evt.sourceEvent.type === "keydown"
-
-    }))
-
-    scene.actionManager.registerAction(new ExecuteCodeAction(ActionManager.OnKeyUpTrigger, function (evt) {
-        map[evt.sourceEvent.key] = evt.sourceEvent.type === "keydown"
-    }))
-
-    /****************************End Key Controls************************************************/
+    /*****************************End Particles to Show Movement********************************************/
 
 
     /****************************Variables************************************************/
@@ -217,11 +199,16 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     /****************************Animation******************************************************/
     let turningLeft = false
     let turningRight = false
+    const MAX_SPEED = 10
     scene.registerAfterRender(function () {
+        const { input } = detectionState.state
         F = engine.getFps()
 
-        if (map[" "] && D < 5) {
+        if (input.up && D < MAX_SPEED) {
             D += 1
+        }
+        if (input.down && D > 0.15) {
+            D -= 0.5
         }
 
         if (D > 0.15) {
@@ -233,21 +220,24 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
 
         let distance = D / F
         psi = D / (r * F)
-        const turnLeft = (map['a'] || map['A'] || detectionState.state.input.left > 0)
-        const turnRight = (map['d'] || map['D'] || detectionState.state.input.right > 0)
+        const turnLeft = input.left > 0
+        const turnRight = input.right > 0
+        const centerWheel = input.center
+        const canTurnLeft = -Math.PI / 6 < theta
+        const canTurnRight = theta < Math.PI / 6
 
-        if (turnLeft && -Math.PI / 6 < theta) {
+        if (turnLeft && canTurnLeft) {
             turningLeft = true
             turningRight = false
             deltaTheta = -Math.PI / 252
             theta += deltaTheta
+            console.log(`Turning left -> theta: ${theta}, delta ${deltaTheta}`)
             pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             if (Math.abs(theta) > 0.00000001) {
                 NR = A / 2 + L / Math.tan(theta)
             }
             else {
-                console.log('turnLeft & Resetting theta & NR')
                 theta = 0
                 NR = 0
             }
@@ -255,11 +245,12 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
             carBody.translate(Axis.Z, R - NR, Space.LOCAL)
             R = NR
         }
-        if (turnRight && theta < Math.PI / 6) {
+        if (turnRight && canTurnRight) {
             turningRight = true
             turningLeft = false
             deltaTheta = Math.PI / 252
             theta += deltaTheta
+            console.log(`Turning right -> theta: ${theta}, delta ${deltaTheta}`)
             pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             if (Math.abs(theta) > 0.00000001) {
@@ -274,6 +265,30 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
             carBody.translate(Axis.Z, R - NR, Space.LOCAL)
             R = NR
         }
+        // if (centerWheel && (canTurnLeft || canTurnRight)) {
+        //     const isPositive = Math.abs(theta) > 0.00000001
+        //     // Wheel is left? move it right (positive delta) & vice-versa
+        //     const delta = (isPositive && canTurnLeft)
+        //         ? -Math.PI / 252
+        //         : (isPositive && canTurnRight)
+        //         ? Math.PI / 252
+        //         : 0
+        //     deltaTheta = delta
+        //     theta += delta
+        //     console.log(`Centering -> ${JSON.stringify({ deltaTheta, theta }, null, 4)}`)
+
+        //     pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
+        //     pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
+        //     if (isPositive) {
+        //         NR = A / 2 + L / Math.tan(theta)
+        //     } else {
+        //         theta = 0
+        //         NR = 0
+        //     }
+        //     pivot.translate(Axis.Z, NR - R, Space.LOCAL)
+        //     carBody.translate(Axis.Z, R - NR, Space.LOCAL)
+        //     R = NR
+        // }
 
         if (D > 0) {
             phi = D / (R * F)
