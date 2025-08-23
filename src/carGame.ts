@@ -19,7 +19,6 @@ import { DetectionState } from './detection/detectionState'
 
 
 export function setup(containerId: string, detectionState: DetectionState) {
-    console.log(`carGame -> setup(${containerId})`)
     const gameContainer = document.getElementById(containerId)
     // Clear any existing content
     gameContainer.innerHTML = ''
@@ -40,7 +39,6 @@ export function setup(containerId: string, detectionState: DetectionState) {
 }
 
 export function createScene(canvas, detectionState: DetectionState): [Engine, Scene] {
-    console.log(`carGame -> createScene(${canvas})`)
     const engine = new Engine(canvas, true, {
         preserveDrawingBuffer: true,
         stencil: true,
@@ -197,8 +195,6 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
 
 
     /****************************Animation******************************************************/
-    let turningLeft = false
-    let turningRight = false
     const MAX_SPEED = 10
     scene.registerAfterRender(function () {
         const { input } = detectionState.state
@@ -227,11 +223,8 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
         const canTurnRight = theta < Math.PI / 6
 
         if (turnLeft && canTurnLeft) {
-            turningLeft = true
-            turningRight = false
             deltaTheta = -Math.PI / 252
             theta += deltaTheta
-            console.log(`Turning left -> theta: ${theta}, delta ${deltaTheta}`)
             pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             if (Math.abs(theta) > 0.00000001) {
@@ -246,18 +239,14 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
             R = NR
         }
         if (turnRight && canTurnRight) {
-            turningRight = true
-            turningLeft = false
             deltaTheta = Math.PI / 252
             theta += deltaTheta
-            console.log(`Turning right -> theta: ${theta}, delta ${deltaTheta}`)
             pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             if (Math.abs(theta) > 0.00000001) {
                 NR = A / 2 + L / Math.tan(theta)
             }
             else {
-                console.log('turnRight & Resetting theta & NR')
                 theta = 0
                 NR = 0
             }
@@ -265,30 +254,6 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
             carBody.translate(Axis.Z, R - NR, Space.LOCAL)
             R = NR
         }
-        // if (centerWheel && (canTurnLeft || canTurnRight)) {
-        //     const isPositive = Math.abs(theta) > 0.00000001
-        //     // Wheel is left? move it right (positive delta) & vice-versa
-        //     const delta = (isPositive && canTurnLeft)
-        //         ? -Math.PI / 252
-        //         : (isPositive && canTurnRight)
-        //         ? Math.PI / 252
-        //         : 0
-        //     deltaTheta = delta
-        //     theta += delta
-        //     console.log(`Centering -> ${JSON.stringify({ deltaTheta, theta }, null, 4)}`)
-
-        //     pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
-        //     pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
-        //     if (isPositive) {
-        //         NR = A / 2 + L / Math.tan(theta)
-        //     } else {
-        //         theta = 0
-        //         NR = 0
-        //     }
-        //     pivot.translate(Axis.Z, NR - R, Space.LOCAL)
-        //     carBody.translate(Axis.Z, R - NR, Space.LOCAL)
-        //     R = NR
-        // }
 
         if (D > 0) {
             phi = D / (R * F)

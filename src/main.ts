@@ -12,10 +12,8 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="app-container">
     <div class="input-container">
       <div class="webcam-input">
-        <div id="live-view">
-          <canvas id="canvas" class="webcam-render"  width="250" height="200"></canvas>
-          <video id="video" class="webcam-visual" autoplay playsinline></video>
-        </div>
+        <canvas id="canvas" class="webcam-render"  width="250" height="200"></canvas>
+        <video id="video" class="webcam-visual" autoplay playsinline></video>
       </div>
       <div class="input-config">
         ${Arrows.initial()}
@@ -31,12 +29,11 @@ const detectionState = new DetectionState()
 // @ts-ignore
 const video: HTMLVideoElement | null = document.getElementById('video')
 // Remove any highlighting from previous frame.
-const liveView: HTMLElement | null = document.getElementById('live-view')
 
 
 async function main() {
 
-  if (!video || !liveView) {
+  if (!video) {
     return
   }
   detectionState.setStatus(IStatus.PENDING)

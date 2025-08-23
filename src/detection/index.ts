@@ -94,10 +94,10 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
 
     const inputs = detectionState.state.input
     const inputTexts = [
-        `Left: ${inputs.left}`,
-        `Right: ${inputs.right}`,
-        `Up: ${inputs.up}`,
-        `Down: ${inputs.down}`
+        `Left: ${displayPercent(inputs.left)}`,
+        `Right: ${displayPercent(inputs.right)}`,
+        `Up: ${displayPercent(inputs.up)}`,
+        `Down: ${displayPercent(inputs.down)}`
     ]
     inputTexts.forEach((value: string, index: number)=> {
         ctx.font = '12px sans-serif'
@@ -116,4 +116,9 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
         ctx.strokeRect(boundingBox.originX, boundingBox.originY, boundingBox.width, boundingBox.height)
     }
     ctx.globalAlpha = 1.0
+}
+
+
+function displayPercent(n: number): string {
+    return (Math.round(n * 100) / 100).toFixed(2)
 }

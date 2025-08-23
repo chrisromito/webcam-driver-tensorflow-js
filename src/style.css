@@ -222,6 +222,7 @@ button:focus-visible {
   display: flex;
   flex-wrap: nowrap;
   justify-content: space-around;
+  align-items: center;
 
   width: 100%;
   max-width: 100%;
@@ -267,12 +268,21 @@ button:focus-visible {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  /* align-items: flex-end; */
+  align-items: center;
 }
 
 .input-config .arrows .arrow {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: min(4rem, 12.5vw);
+  height: min(4rem, 12.5vh);
+}
+
+.arrow svg {
+  width: min(4rem, 12.5vw);
+  height: min(4rem, 12.5vh);
 }
 
 .input-config .center-arrows {
@@ -315,7 +325,7 @@ button:focus-visible {
   justify-content: flex-start;
   width: 48%;
   cursor: pointer;
-  height: 50vh;
+  height: 100%;
   max-height: 100%;
 }
 
