@@ -20,7 +20,11 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
       </div>
     </div>
     <div class="game-row">
-      <div id="game-container" class="game-container"></div>
+      <div id="game-container" class="game-container flex align-center justify-center">
+        <div class="lds-dual-ring">
+          Loading Game...
+        </div>
+      </div>
     </div>
   </div>
 `

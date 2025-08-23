@@ -16,6 +16,7 @@ import {
     ExecuteCodeAction,
 } from '@babylonjs/core'
 import { DetectionState } from './detection/detectionState'
+import grassTextureImg from './assets/green_grass_texture.jpg'
 
 
 export function setup(containerId: string, detectionState: DetectionState) {
@@ -149,8 +150,10 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     let groundSize = 400
 
     let ground = MeshBuilder.CreateGround("ground", { width: groundSize, height: groundSize }, scene)
+    // let grassTexture = new Texture(grassTextureImg, scene)
     let groundMaterial = new StandardMaterial("ground", scene)
-    groundMaterial.diffuseColor = new Color3(0.75, 1, 0.25)
+    // groundMaterial.diffuseColor = new Color3(0.75, 1, 0.25)
+    groundMaterial.diffuseTexture = new Texture(grassTextureImg, scene)
     ground.material = groundMaterial
     ground.position.y = -1.5
     /*****************************End Add Ground********************************************/
