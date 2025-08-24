@@ -19,7 +19,7 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         ${Arrows.initial()}
       </div>
     </div>
-    <div class="game-row">
+    <div class="game-row flex align-center justify-center">
       <div id="game-container" class="game-container flex align-center justify-center">
         <div class="lds-dual-ring">
           Loading Game...

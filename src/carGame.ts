@@ -53,6 +53,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
 
     // lights
     let light1 = new DirectionalLight("light1", new Vector3(1, 2, 0), scene)
+    light1.intensity = 1
     let light2 = new HemisphericLight("light2", new Vector3(0, 1, 0), scene)
     light2.intensity = 0.75
 
