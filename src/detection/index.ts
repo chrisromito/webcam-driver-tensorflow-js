@@ -21,7 +21,7 @@ export async function initializeFaceDetector(): Promise<TFaceDetector> {
 
     const faceDetector = await FaceDetector.createFromOptions(vision, {
         baseOptions: {
-            modelAssetPath: '/models/blaze_face_short_range.tflite',
+            modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite',
             delegate: 'GPU'
         },
         runningMode: 'VIDEO'
