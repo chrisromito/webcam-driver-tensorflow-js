@@ -1,58 +1,32 @@
 import './style.css'
-import { initializeFaceDetector, enableWebcam, detect, displayVideoDetections, renderDetections } from './detection'
-import { run } from './game'
+import { Arrows } from './libs/dom'
+import { initializeFaceDetector, enableWebcam, detect, renderDetections } from './detection'
 import { DetectionState } from './detection/detectionState'
 import { IStatus } from './detection/types'
-import { show, hide } from './libs/dom'
+
+
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="app-container">
     <div class="input-container">
       <div class="webcam-input">
-        <div id="live-view">
-          <canvas id="canvas" class="webcam-render"  width="500" height="400"></canvas>
-          <video id="video" class="webcam-visual" autoplay playsinline></video>
-        </div>
+        <canvas id="canvas" class="webcam-render"  width="250" height="200"></canvas>
+        <video id="video" class="webcam-visual" autoplay playsinline></video>
       </div>
-      <div id="steps" class="steps">
-        <div id="step-1" class="step hide">
-          <p>
-            Stand Center
-          </p>
-        </div>
-        <div id="step-2" class="step hide">
-          <p>
-            Lean left
-          </p>
-        </div>
-        <div id="step-3" class="step hide">
-          <p>
-            Lean right
-          </p>
-        </div>
-        <div id="step-4" class="step hide">
-          <p>
-            Look up (accelerate)
-          </p>
-        </div>
-        <div id="step-5" class="step hide">
-          <p>
-            Look down (brake)
-          </p>
-        </div>
-        <div id="step-6" class="step hide">
-          <h5>Configuration Complete</h5>
-          <p>
-            Lean left to steer left
-          </p>
-          <p>
-            Lean right to steer right
-          </p>
-        </div>
-        <button id="step-button" class="step-button">Next</button>
+      <div class="input-config">
+        ${Arrows.initial()}
       </div>
     </div>
-    <div id="game-container" class="game-container"></div>
+    <div class="game-row flex align-center justify-center">
+      <div id="game-container" class="game-container flex align-center justify-center">
+        <div class="lds-dual-ring">
+          Loading Game...
+        </div>
+      </div>
+    </div>
+    <div class="credits">
+      <a href="https://doc.babylonjs.com/guidedLearning/workshop/Car_Driven/">Original Car Game Code Provided by Babylon.js</a>
+    </div>
   </div>
 `
 
@@ -60,43 +34,26 @@ const detectionState = new DetectionState()
 // @ts-ignore
 const video: HTMLVideoElement | null = document.getElementById('video')
 // Remove any highlighting from previous frame.
-const liveView: HTMLElement | null = document.getElementById('live-view')
 
-const button = document.getElementById('step-button')
 
 async function main() {
 
-  if (!video || !liveView) {
+  if (!video) {
     return
   }
   detectionState.setStatus(IStatus.PENDING)
-  const stream = await enableWebcam(video)
+  const stream = await enableWebcam(video, canvas.offsetWidth, canvas.offsetHeight)
   detectionState.setStatus(IStatus.ACCEPTED)
+  detectionState.setupKeyListeners()
 
-  console.log('Initializing face detector...')
   const detector = await initializeFaceDetector()
-  let lastStatus = detectionState.state.status
   await configStepLoop(detector)
-  // Block until config is complete
-  while (detectionState.state.status !== IStatus.CONFIG_COMPLETE) {
-    await sleep(100)
-    if (detectionState.state.status !== lastStatus) {
-      console.log('Status changed, calling configStepLoop')
-      await configStepLoop(detector)
-      lastStatus = detectionState.state.status
-    } else {
-        console.log('awaiting config completion, displaying detection results in the meantime')
-        const detections = detect(video, detector)
-        renderDetections(ctx, video, detections, detectionState)
-    }
-  }
-  console.log('Booting game...')
-  await run()
 
-  console.log('Detection loop is beginning')
+  const carGame = await import('./carGame').then((m)=> m.default)
+  carGame('game-container', detectionState)
 
   let loopCounter = 0
-  while (detectionState.state.status === IStatus.CONFIG_COMPLETE) {
+  while (detectionState.state.status !== IStatus.ERROR) {
     await detectionLoop(detector, loopCounter)
     if (loopCounter > 0) {
       loopCounter = 0
@@ -111,92 +68,53 @@ async function main() {
  * Config Steps
  */
 async function configStepLoop(detector) {
-  if (detectionState.state.status === IStatus.CONFIG_COMPLETE) {
-    hideSteps()
-    showStep(6)
-    return true
+  if (canvas) {
+    detectionState.setCenter(canvas.offsetWidth, canvas.offsetHeight)
   }
-  // Kick off the 'configure left' step
-  if (detectionState.state.status === IStatus.ACCEPTED) {
-    console.log('Start config step 1')
-    hideSteps()
-    showStep(1)
-    button.addEventListener('click', () => {
-      const detections = detect(video, detector)
-      detectionState.configCenter(detections)
-    }, {
-      once: true
-    })
+  try {
+    const detections = detect(video, detector)
+    detectionState.configCenter(detections, canvas.offsetWidth, canvas.offsetHeight)
+    await sleep(100)
+    await detectionLoop(detector, 1)
+  } catch (error) {
+    console.error(error)
+    return false
   }
-  if (detectionState.state.status === IStatus.CONFIG_LEFT) {
-    console.log('Start config step 2')
-    hideSteps()
-    showStep(2)
-    button.addEventListener('click', () => {
-      const detections = detect(video, detector)
-      detectionState.configLeft(detections)
-    }, { once: true })
-  }
-  if (detectionState.state.status === IStatus.CONFIG_RIGHT) {
-    console.log('Start config step 3')
-    hideSteps()
-    showStep(3)
-    button.addEventListener('click', () => {
-      const detections = detect(video, detector)
-      detectionState.configRight(detections)
-    }, { once: true })
-  }
-  if (detectionState.state.status === IStatus.CONFIG_BRAKE) {
-    console.log('Start config step 4')
-    hideSteps()
-    showStep(4)
-    button.addEventListener('click', () => {
-      const detections = detect(video, detector)
-      detectionState.configBrake(detections)
-    }, { once: true })
-  }
-  if (detectionState.state.status === IStatus.CONFIG_GAS) {
-    console.log('Start config step 5')
-    hideSteps()
-    showStep(5)
-    button.addEventListener('click', () => {
-      const detections = detect(video, detector)
-      detectionState.configGas(detections)
-    }, { once: true })
-  }
+  return true
 }
 
-
-function hideSteps() {
-  const steps = [...document.querySelectorAll('.steps .step')]
-  steps.forEach(hide)
-}
-
-function showStep(value: number) {
-  const step = document.getElementById(`step-${value}`)
-  if (step) {
-    show(step)
-  }
-}
 
 /**
  * MAIN DETECTION LOOP
  */
 
 const canvas = document.getElementById('canvas')
-// @ts-ignore
-const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
 
 async function detectionLoop(detector, loopCounter: number = 0) {
   const detections = detect(video, detector)
   detectionState.state.detection = detections
   detectionState.setInputs()
-  await sleep(50)
+  await nextTick()
   if (loopCounter > 0) {
+    // @ts-ignore
+    const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
     renderDetections(ctx, video, detections, detectionState)
+  } else {
+    renderArrows(detectionState)
   }
 }
 
+
+function renderArrows(dState: DetectionState) {
+  Arrows.update(dState.state.input)
+}
+
+
+async function nextTick(): Promise<boolean> {
+  return await new Promise((resolve)=> {
+    requestAnimationFrame(()=> resolve(true))
+  })
+}
 
 async function sleep(ms: number) {
   return await new Promise((resolve) => {

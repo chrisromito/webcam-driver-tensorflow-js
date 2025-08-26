@@ -14,7 +14,7 @@
 }
 
 * {
-  box-sizing: content-box;
+  box-sizing: border-box;
 }
 
 a {
@@ -33,12 +33,14 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
 /* 
 #app {
   height: 100vh;
@@ -110,11 +112,105 @@ button:focus-visible {
   }
 }
 
+/** 
+* Generics
+*==================*/
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+}
 
+
+.block {
+  display: block;
+}
+
+.m-auto {
+  margin: auto;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.my-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.flex {
+  display: flex;
+}
+
+.i-flex {
+  display: inline-flex;
+}
+
+.wrap {
+  flex-wrap: wrap;
+}
+
+.no-wrap {
+  flex-wrap: nowrap;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-start {
+  align-items: flex-start;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.p1 {
+  padding: 0.25rem;
+}
+
+.p2 {
+  padding: 0.5rem;
+}
+
+.p3 {
+  padding: 0.75rem;
+}
+
+.p4 {
+  padding: 1rem;
+}
+
+
+.row {
+  display: flex;
+  width: 100%;
+  max-width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.cell {
+  display: flex;
+  padding: 0.5rem;
+}
+
+
+/**
+* App Components
+*==============*/
 .app-container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: flex-start;
   width: 100vw;
   max-width: 100%;
@@ -122,26 +218,94 @@ button:focus-visible {
   max-height: 100%;
 }
 
-.input-container, .game-container {
+.input-container {
   display: flex;
   flex-wrap: nowrap;
-  justify-content: space-between;
+  justify-content: space-around;
+  align-items: center;
 
+  /* width: 100%; */
+  /* max-width: 100%; */
+  position: relative;
+  height: 200px;
+  max-height: 25vh;
+}
+
+.game-row {
+  height: calc(100vh - 300px);
+  max-height: 100%;
   width: 100%;
   max-width: 100%;
+  overflow: hidden;
   position: relative;
-  max-height: 50vh;
 }
 
-.webcam-container {
-
+.game-container {
+  position: relative;
+  height: 100%;
+  max-height: 100%;
 }
-.webcam-input, .steps {
+
+.game-container, .input-container {
+  width: 900px;
+  max-width: 100%;
+}
+
+.webcam-input,
+.steps {
   /* display: block;
   width: 50%;
   max-width: 50%;
   float: left; */
   position: relative;
+}
+
+.input-config {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+}
+
+.input-config .arrows {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  /* align-items: flex-end; */
+  align-items: center;
+}
+
+.input-config .arrows .arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(4rem, 12.5vw);
+  height: min(4rem, 12.5vh);
+}
+
+.arrow svg {
+  width: min(4rem, 12.5vw);
+  height: min(4rem, 12.5vh);
+}
+
+.input-config .center-arrows {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: column;
+}
+
+.arrow-up {
+  transform: rotate(90deg);
+}
+
+.arrow-right {
+  transform: rotate(180deg);
+}
+
+.arrow-down {
+  transform: rotate(270deg);
 }
 
 .steps {
@@ -164,83 +328,128 @@ button:focus-visible {
   justify-content: flex-start;
   width: 48%;
   cursor: pointer;
-  height: 50vh;
-  max-height: 100vh;
+  height: 100%;
+  max-height: 100%;
 }
-
-/* 
-.webcam-input video {
-  transform: rotateY(180deg);
-  -webkit-transform: rotateY(180deg);
-  -moz-transform: rotateY(180deg);
-  position: relative;
-  width: 100%;
-  max-width: 100%;
-  height: calc(50vh - 25px);
-  max-height: calc(50vh - 25px);
-} */
 
 .webcam-input video {
   display: none;
 }
 
 .webcam-input canvas {
-  width: 500px;
-  height: 400px;
+  /* width: 500px; */
+  /* height: 400px; */
   max-width: 100%;
   max-height: 100%;
   position: relative;
 }
 
-/*
-.webcam-input .highlighter, .webcam-input .key-point {
-  position: absolute;
-  padding-bottom: 5px;
-  padding-top: 5px;
-  background-color: #007f8b;
-  color: #fff;
-  border: 1px dashed rgba(255, 255, 255, 0.7);
-  z-index: 2;
-  font-size: 12px;
-  margin: 0;
-}
-  */
-
-.webcam-input .highlighter {
-  /* position: relative; */
-  /* display: flex; */
-  /* padding-bottom: 5px; */
-  color: white;
-  z-index: 2;
-  font-size: 1rem;
-
-  background: rgba(0, 255, 0, 0.25);
-  border: 1px dashed #fff;
-  z-index: 2;
-  position: absolute;
-}
-
-.key-point {
-  position: absolute;
-  z-index: 1;
-  width: 3px;
-  height: 3px;
-  background-color: #ff0000;
-  /* border: 1px solid #ffffff; */
-  border-radius: 50%;
-  display: block;
-}
-
-.webcam-input .center {
-  position: absolute;
-  height: 100%;
-  width: 3px;
-  background-color: rgba(0, 255, 0, 0.5);
-  z-index: 2;
-  content: '';
-}
-
-
 .hide {
   display: none;
 }
+
+/**
+* Mobile Landscape
+*/
+@media screen and (orientation:landscape) and (min-device-width: 319px) and (max-device-width: 1000px) {
+
+  /* Your CSS Here*/
+  .app-container {}
+
+  .input-container {
+    width: 50%;
+    height: 100%;
+    max-height: 100%;
+    flex-direction: column;
+  }
+
+  .input-config {
+
+  }
+
+  .webcam-input {
+    height: 50vh;
+    max-height: 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .webcam-input .webcam-render {
+
+  }
+
+  .game-row {
+    width: 50%;
+    height: 100%;
+  }
+}
+
+
+/**
+* Mobile Portrait
+*/
+@media screen and (orientation:portrait) and (min-device-width: 200px) and (max-device-width: 1000px) {
+
+  /* Your CSS Here*/
+  .app-container {}
+
+  .input-container {
+    width: 100%;
+    height: 100%;
+    max-height: 25vh;
+    flex-direction: row;
+    padding: 0.25rem;
+  }
+
+  .input-config {
+
+  }
+
+  .webcam-input {
+    height: 25vh;
+    max-height: 100%;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .webcam-input .webcam-render {
+
+  }
+
+  .game-row {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+
+
+.lds-dual-ring,
+.lds-dual-ring:after {
+  box-sizing: border-box;
+}
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+.lds-dual-ring:after {
+  content: " ";
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6.4px solid currentColor;
+  border-color: currentColor transparent currentColor transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
