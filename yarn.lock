@@ -36,6 +36,51 @@
   resolved "https://registry.yarnpkg.com/@babylonjs/serializers/-/serializers-7.54.3.tgz#27398d8791564a2729e25e7e1fa8430a383cd4b1"
   integrity sha512-G5s2VO/90ibU4uRVeB+4dVByNlKvDLb+gOk9P1hxBz000b3ZEwtNCKNyWbXaQOYHp6ktXXrwl8hgi03DS72gAg==
 
+"@enable3d/ammo-physics@^0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@enable3d/ammo-physics/-/ammo-physics-0.26.1.tgz#fbb3e8d195d7f07aae4339e0ed9fc5a458715c3e"
+  integrity sha512-3LRndxRBJ2VPbKfg2tCGXNm0oMbLBKzglotvGwlosfFVW9xHyxOcu/507jD/8lOtwUKYWHTP5h0Peeoo6uzpZA==
+  dependencies:
+    "@enable3d/common" "^0.26.1"
+    "@enable3d/three-wrapper" "^0.26.1"
+    "@yandeu/events" "0.0.7"
+
+"@enable3d/common@^0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@enable3d/common/-/common-0.26.1.tgz#a1fd2f87a9985f0d0844caddfb596f82658b1b10"
+  integrity sha512-S1mvq3R71LYgdTE5PG6/sKvCjhv8yODQTtJYick5sdVvBEA8IlwTevl5gmBNzI04sCoBvaUepE34WWsL95bRQA==
+  dependencies:
+    "@enable3d/three-wrapper" "^0.26.1"
+    "@yandeu/events" "0.0.7"
+
+"@enable3d/phaser-extension@^0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@enable3d/phaser-extension/-/phaser-extension-0.26.1.tgz#84380327ee98f246ed0ab180fc1a815c8dfe64fe"
+  integrity sha512-joZr7iIaqFECjw1HL9ADJ65QvwVWf3+gOoyTs+knun4BQ4rRI4r1iCzNh1U5HhBkKGAzMZJgJ7/uWPG93Z5dNg==
+  dependencies:
+    "@enable3d/ammo-physics" "^0.26.1"
+    "@enable3d/common" "^0.26.1"
+    "@enable3d/three-graphics" "^0.26.1"
+    "@enable3d/three-wrapper" "^0.26.1"
+    "@yandeu/events" "0.0.7"
+
+"@enable3d/three-graphics@^0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@enable3d/three-graphics/-/three-graphics-0.26.1.tgz#44bad88741d130ee83f0037b6beaea41b0101a9a"
+  integrity sha512-s7RuKUVZeelI6PW5G8eLjFFm7Wsp03t15ISDdTQFRKf4jk9jZW9U6cX9/fuVKDjfIGfTMB2b2izOUpo1ft6EUA==
+  dependencies:
+    "@enable3d/ammo-physics" "^0.26.1"
+    "@enable3d/common" "^0.26.1"
+    "@enable3d/three-wrapper" "^0.26.1"
+    "@yandeu/events" "0.0.7"
+    "@yandeu/tap" "0.0.3"
+    three-csg-ts "^3.1.10"
+
+"@enable3d/three-wrapper@^0.26.1":
+  version "0.26.1"
+  resolved "https://registry.yarnpkg.com/@enable3d/three-wrapper/-/three-wrapper-0.26.1.tgz#efb965c2d401c3882caf12b9be524a0eff98bafa"
+  integrity sha512-evzptJ99LIymOIQFk//l6lgMa8VJ0tgUn+q7OS5ycR1vbqmcuAs7M80m5UIdVcEg+5Ef1Gsy4sPEV3JWbhJP7A==
+
 "@esbuild/aix-ppc64@0.25.8":
   version "0.25.8"
   resolved "https://registry.yarnpkg.com/@esbuild/aix-ppc64/-/aix-ppc64-0.25.8.tgz#a1414903bb38027382f85f03dda6065056757727"
@@ -307,6 +352,23 @@ cannon-es@^0.20.0:
   resolved "https://registry.yarnpkg.com/cannon-es/-/cannon-es-0.20.0.tgz#bf2f62a674701f37e3d861c90668a32d4d32f082"
   integrity sha512-eZhWTZIkFOnMAJOgfXJa9+b3kVlvG+FX4mdkpePev/w/rP5V8NRquGyEozcjPfEoXUlb+p7d9SUcmDSn14prOA==
 
+"@yandeu/events@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@yandeu/events/-/events-0.0.5.tgz#f8fb41cf4222186eca6a0a5d36f5393805484f19"
+  integrity sha512-TUkghSGu0ThcEyAP50WHU/vdQkpt9EZyotjZzG8KirR+VI5o7Rp5wabcGru62JNy+awMR8Voy+kFzhNkC/1E6A==
+
+"@yandeu/events@0.0.7":
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/@yandeu/events/-/events-0.0.7.tgz#ec87d8407daa758d57c278946bf8f098ccbd2b9a"
+  integrity sha512-l78u4CooPw/WlN3H15bhOpims+gAsAkxbcjDn1GZ5oa+h9wqg+pBBzZos38xDeqKW/UVgPMkurVDPrf7JhhmTA==
+
+"@yandeu/tap@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@yandeu/tap/-/tap-0.0.3.tgz#36109cb23a02a4808407fb7f9811fcb6cfec8521"
+  integrity sha512-GIStEHmboHVbs6ghcRxkO5NVdZtRCsf1mkKI0gvzc21uj5qGlGSCD/Eaax98/c6Mu9+n2lkTYbTwuBbg2vzuQw==
+  dependencies:
+    "@yandeu/events" "0.0.5"
+
 esbuild@^0.25.0:
   version "0.25.8"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.25.8.tgz#482d42198b427c9c2f3a81b63d7663aecb1dda07"
@@ -349,6 +411,19 @@ fsevents@~2.3.2, fsevents@~2.3.3:
   resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.3.tgz#cac6407785d03675a2a5e1a5305c697b347d90d6"
   integrity sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==
 
+<<<<<<< HEAD
+=======
+matter-js@^0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/matter-js/-/matter-js-0.20.0.tgz#dc3c95c40ea5ef8937788a2770c3f97223b352ed"
+  integrity sha512-iC9fYR7zVT3HppNnsFsp9XOoQdQN2tUyfaKg4CHLH8bN+j6GT4Gw7IH2rP0tflAebrHFw730RR3DkVSZRX8hwA==
+
+meshoptimizer@~0.18.1:
+  version "0.18.1"
+  resolved "https://registry.yarnpkg.com/meshoptimizer/-/meshoptimizer-0.18.1.tgz#cdb90907f30a7b5b1190facd3b7ee6b7087797d8"
+  integrity sha512-ZhoIoL7TNV4s5B6+rx5mC//fw8/POGyNxS/DZyCJeiZ12ScLfVwRE/GfsxwiTkMYYD5DmK2/JXnEVXqL4rF+Sw==
+
+>>>>>>> main
 nanoid@^3.3.11:
   version "3.3.11"
   resolved "https://registry.yarnpkg.com/nanoid/-/nanoid-3.3.11.tgz#4f4f112cefbe303202f2199838128936266d185b"
@@ -412,6 +487,19 @@ stats-js@^1.0.1:
   resolved "https://registry.yarnpkg.com/stats-js/-/stats-js-1.0.1.tgz#377c36490c1935b9a4e68bf3acc3afeb59878f66"
   integrity sha512-EAwEFghGNv8mlYC4CZzI5kWghsnP8uBKXw6VLRHtXkOk5xySfUKLTqTkjgJFfDluIkf/O7eZwi5MXP50VeTbUg==
 
+<<<<<<< HEAD
+=======
+three-csg-ts@^3.1.10:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/three-csg-ts/-/three-csg-ts-3.2.0.tgz#f6e834610615577dc24419052ce8edf509743ef5"
+  integrity sha512-oTYg8kdal6qgHDbso/6VzA12Udf2ic2uXhf0XlJzuSP+Gs0OUR5gTHSZ7GotAE+M/QcVlw41eOwiWZVnJG5/8w==
+
+three@^0.178.0:
+  version "0.178.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.178.0.tgz#470fb4bc35bc0782dfe9a2c9b157fcbc1944bc44"
+  integrity sha512-ybFIB0+x8mz0wnZgSGy2MO/WCO6xZhQSZnmfytSPyNpM0sBafGRVhdaj+erYh5U+RhQOAg/eXqw5uVDiM2BjhQ==
+
+>>>>>>> main
 tinyglobby@^0.2.14:
   version "0.2.14"
   resolved "https://registry.yarnpkg.com/tinyglobby/-/tinyglobby-0.2.14.tgz#5280b0cf3f972b050e74ae88406c0a6a58f4079d"
