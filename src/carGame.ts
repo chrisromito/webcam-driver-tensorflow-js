@@ -18,6 +18,7 @@ import {
 } from '@babylonjs/core'
 import { SkyMaterial } from '@babylonjs/materials'
 import { DetectionState } from './detection/detectionState'
+import greenGrassTextureImg from './assets/green_grass_texture.jpg'
 
 
 export default function setup(containerId: string, detectionState: DetectionState) {
@@ -300,7 +301,7 @@ function buildGround(scene: Scene) {
 
     let ground = MeshBuilder.CreateGround("ground", { width: groundSize, height: groundSize }, scene)
     let groundMaterial = new StandardMaterial("ground", scene)
-    groundMaterial.diffuseTexture = new Texture('/green_grass_texture.jpg', scene)
+    groundMaterial.diffuseTexture = new Texture(greenGrassTextureImg, scene)
     ground.material = groundMaterial
     ground.position.y = -1.5
 }
