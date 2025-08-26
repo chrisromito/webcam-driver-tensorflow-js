@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -10,10 +9,3 @@ export default defineConfig({
         }
     }
 })
-=======
-export default {
-  optimizeDeps: {
-    exclude: ['matter-js']
-  }
-}
->>>>>>> main
