@@ -1,25 +1,26 @@
 import {
     Engine,
     Scene,
-    UniversalCamera,
     Vector3,
-    HemisphericLight, MeshBuilder,
-    StandardMaterial, Color3, CannonJSPlugin, PhysicsImpostor, AbstractMesh,
-    Mesh, DirectionalLight,
+    HemisphericLight, 
+    MeshBuilder,
+    StandardMaterial, 
+    Color3,
+    Color4,
+    Mesh, 
+    DirectionalLight,
     ArcRotateCamera,
     Texture,
     Vector4,
     Axis,
     Space,
     SolidParticleSystem,
-    ActionManager,
-    ExecuteCodeAction,
 } from '@babylonjs/core'
+import { SkyMaterial } from '@babylonjs/materials'
 import { DetectionState } from './detection/detectionState'
-import grassTextureImg from './assets/green_grass_texture.jpg'
 
 
-export function setup(containerId: string, detectionState: DetectionState) {
+export default function setup(containerId: string, detectionState: DetectionState) {
     const gameContainer = document.getElementById(containerId)
     // Clear any existing content
     gameContainer.innerHTML = ''
@@ -47,6 +48,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
         adaptToDeviceRatio: true
     })
     const scene = new Scene(engine)
+    scene.clearColor = new Color4(0.03, 0.78, 0.97)
     // camera
     let camera = new ArcRotateCamera("camera1", 0, 0, 20, new Vector3(0, 0, 0), scene)
     camera.setPosition(new Vector3(11.5, 3.5, 0))
@@ -56,6 +58,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     light1.intensity = 1
     let light2 = new HemisphericLight("light2", new Vector3(0, 1, 0), scene)
     light2.intensity = 0.75
+    // const sky = buildSky(scene)
 
     /***************************Car*********************************************/
 
@@ -83,6 +86,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     let carBody = MeshBuilder.ExtrudeShape("body", { shape: side, path: extrudePath, cap: Mesh.CAP_ALL }, scene)
     carBody.material = bodyMaterial
     camera.parent = carBody
+    // camera.heightOffset = 10
     /*-----------------------End Car Body------------------------------------------*/
 
     /*-----------------------Wheel------------------------------------------*/
@@ -148,15 +152,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
     /*************************** End Car*********************************************/
 
     /*****************************Add Ground********************************************/
-    let groundSize = 400
-
-    let ground = MeshBuilder.CreateGround("ground", { width: groundSize, height: groundSize }, scene)
-    // let grassTexture = new Texture(grassTextureImg, scene)
-    let groundMaterial = new StandardMaterial("ground", scene)
-    // groundMaterial.diffuseColor = new Color3(0.75, 1, 0.25)
-    groundMaterial.diffuseTexture = new Texture(grassTextureImg, scene)
-    ground.material = groundMaterial
-    ground.position.y = -1.5
+    buildGround(scene)
     /*****************************End Add Ground********************************************/
 
     /*****************************Particles to Show Movement********************************************/
@@ -283,4 +279,28 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
         }
     })
     return [engine, scene]
+}
+
+
+function buildSky(scene: Scene) {
+    const skyMaterial = new SkyMaterial("skyMaterial", scene);
+    skyMaterial.backFaceCulling = false;
+    skyMaterial.luminance = 0.8
+    skyMaterial.turbidity = 0.2
+
+
+    const skyBox = MeshBuilder.CreateBox("skyBox", { size: 1000.0 }, scene);
+    skyBox.material = skyMaterial;
+    return [skyMaterial, skyBox]
+}
+
+
+function buildGround(scene: Scene) {
+    let groundSize = 400
+
+    let ground = MeshBuilder.CreateGround("ground", { width: groundSize, height: groundSize }, scene)
+    let groundMaterial = new StandardMaterial("ground", scene)
+    groundMaterial.diffuseTexture = new Texture('/green_grass_texture.jpg', scene)
+    ground.material = groundMaterial
+    ground.position.y = -1.5
 }

@@ -247,7 +247,7 @@ button:focus-visible {
 }
 
 .game-container, .input-container {
-  width: 750px;
+  width: 900px;
   max-width: 100%;
 }
 

@@ -1,11 +1,9 @@
 import './style.css'
 import { Arrows } from './libs/dom'
 import { initializeFaceDetector, enableWebcam, detect, renderDetections } from './detection'
-// import { startGame } from './game'
-import { setup as setupGame } from './carGame'
 import { DetectionState } from './detection/detectionState'
 import { IStatus } from './detection/types'
-// Track generation now handled by TrackLoader module
+
 
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
@@ -26,6 +24,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         </div>
       </div>
     </div>
+    <div class="credits">
+      <a href="https://doc.babylonjs.com/guidedLearning/workshop/Car_Driven/">Original Car Game Code Provided by Babylon.js</a>
+    </div>
   </div>
 `
 
@@ -45,14 +46,11 @@ async function main() {
   detectionState.setStatus(IStatus.ACCEPTED)
   detectionState.setupKeyListeners()
 
-  console.log('Initializing face detector...')
   const detector = await initializeFaceDetector()
   await configStepLoop(detector)
-  console.log('Booting game...')
-  // await startGame(detectionState)
-  setupGame('game-container', detectionState)
 
-  console.log('Detection loop is beginning')
+  const carGame = await import('./carGame').then((m)=> m.default)
+  carGame('game-container', detectionState)
 
   let loopCounter = 0
   while (detectionState.state.status !== IStatus.ERROR) {
