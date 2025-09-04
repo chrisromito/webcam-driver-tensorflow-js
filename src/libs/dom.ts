@@ -32,19 +32,19 @@ export const Arrows = {
     initial: (): string => {
         return `
             <div class="arrows">
-                <div id="arrow-left" class="arrow arrow-left">
+                <div id="arrow-left" class="arrow arrow-left" data-direction="left">
                     ${arrow.default}
                 </div>
                 <div class="center-arrows">
-                    <div id="arrow-up" class="arrow arrow-up">
+                    <div id="arrow-up" class="arrow arrow-up" data-direction="up">
                         ${arrow.default}
                     </div>
                     
-                    <div id="arrow-down" class="arrow arrow-down">
+                    <div id="arrow-down" class="arrow arrow-down" data-direction="down">
                         ${arrow.default}
                     </div>
                 </div>
-                <div id="arrow-right" class="arrow arrow-right">
+                <div id="arrow-right" class="arrow arrow-right" data-direction="right">
                     ${arrow.default}
                 </div>
             </div>
@@ -57,6 +57,20 @@ export const Arrows = {
                 return
             }
             element.innerHTML = value >= 0.01 ? arrow.active : arrow.default
+        })
+    },
+    setUpListeners: (detectionState)=> {
+        const arrowIds = ['arrow-left', 'arrow-right', 'arrow-up', 'arrow-down']
+        arrowIds.forEach((elementId)=> {
+            const element = document.getElementById(elementId)
+            const direction = element.dataset.direction
+            if (!(element && direction)) {
+                return
+            }
+            element.onmousedown = ()=> detectionState.arrowPress(direction)
+            element.ontouchstart = ()=> detectionState.arrowPress(direction)
+            element.onmouseup = ()=> detectionState.arrowRelease(direction)
+            element.ontouchend = ()=> detectionState.arrowRelease(direction)
         })
     }
 }

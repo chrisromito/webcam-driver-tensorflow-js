@@ -1,5 +1,6 @@
 import './style.css'
 import { Arrows } from './libs/dom'
+import FlipIcon from './assets/flip_camera_ios_icon.svg'
 import { initializeFaceDetector, enableWebcam, detect, renderDetections } from './detection'
 import { DetectionState } from './detection/detectionState'
 import { IStatus } from './detection/types'
@@ -14,6 +15,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
         <video id="video" class="webcam-visual" autoplay playsinline></video>
       </div>
       <div class="input-config">
+        <div class="mirror-button-container i-flex justify-center p2">
+          <button id="mirror-button" class="mirror-button"></button>
+        </div>
         ${Arrows.initial()}
       </div>
     </div>
@@ -33,16 +37,29 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 const detectionState = new DetectionState()
 // @ts-ignore
 const video: HTMLVideoElement | null = document.getElementById('video')
-// Remove any highlighting from previous frame.
+
+
+function onMirrorButtonClick() {
+  detectionState.toggleMirror()
+}
+
+const mirrorButton = document.getElementById('mirror-button')
+mirrorButton?.addEventListener('click', onMirrorButtonClick)
+if (mirrorButton) {
+  mirrorButton.style.backgroundImage = `url("${FlipIcon}")`
+}
+
+// Add event listeners for Arrows
+
 
 
 async function main() {
-
   if (!video) {
     return
   }
   detectionState.setStatus(IStatus.PENDING)
   const stream = await enableWebcam(video, canvas.offsetWidth, canvas.offsetHeight)
+  Arrows.setUpListeners(detectionState)
   detectionState.setStatus(IStatus.ACCEPTED)
   detectionState.setupKeyListeners()
 

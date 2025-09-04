@@ -16,9 +16,7 @@ export type TFaceDetector = {
 }
 
 export async function initializeFaceDetector(): Promise<TFaceDetector> {
-
     const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm")
-
     const faceDetector = await FaceDetector.createFromOptions(vision, {
         baseOptions: {
             modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/latest/blaze_face_short_range.tflite',
@@ -112,7 +110,7 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
     if (boundingBox) {
         ctx.beginPath()
         ctx.lineWidth = 4
-        ctx.strokeStyle = 'green'
+        ctx.strokeStyle = 'red'
         ctx.strokeRect(boundingBox.originX, boundingBox.originY, boundingBox.width, boundingBox.height)
     }
     ctx.globalAlpha = 1.0
