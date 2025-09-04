@@ -196,13 +196,13 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
 
 
     /****************************Animation******************************************************/
-    const MAX_SPEED = 10
+    const MAX_SPEED = 15
     scene.registerAfterRender(function () {
         const { input } = detectionState.state
         F = engine.getFps()
 
         if (input.up && D < MAX_SPEED) {
-            D += 1
+            D += input.up
         }
         if (input.down && D > 0.15) {
             D -= 0.5
@@ -224,7 +224,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
         const canTurnRight = theta < Math.PI / 6
 
         if (turnLeft && canTurnLeft) {
-            deltaTheta = -Math.PI / 252
+            deltaTheta = (-Math.PI / 252) * input.left
             theta += deltaTheta
             pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)
@@ -240,7 +240,7 @@ export function createScene(canvas, detectionState: DetectionState): [Engine, Sc
             R = NR
         }
         if (turnRight && canTurnRight) {
-            deltaTheta = Math.PI / 252
+            deltaTheta = (Math.PI / 252) * input.right
             theta += deltaTheta
             pivotFI.rotate(Axis.Y, deltaTheta, Space.LOCAL)
             pivotFO.rotate(Axis.Y, deltaTheta, Space.LOCAL)

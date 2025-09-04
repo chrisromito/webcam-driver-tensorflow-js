@@ -1,5 +1,5 @@
 import type { Detection } from '@mediapipe/tasks-vision'
-import type { IDetectionState, IInput, IStat } from './types'
+import type { IDetectionState, IInputValue, IStat } from './types'
 import { IStatus } from './types'
 
 const RANGE_THRESHOLD = 0.1
@@ -32,6 +32,7 @@ function onKeyUp(event) {
     if (targetKeys.includes(event.key)) {
         const outKey = keyMap[event.key]
         keyboardState[outKey] = false
+        console.log(`onKeyUp -> ${outKey} -> false`)
     }
 }
 
@@ -39,6 +40,8 @@ function onKeyUp(event) {
 
 export class DetectionState {
     state: IDetectionState
+    buttonState: IInputValue
+    _buttonState: IInputValue
 
     constructor() {
         this.state = {
@@ -65,6 +68,31 @@ export class DetectionState {
                 center: 0
             }
         }
+        this.buttonState = {
+            left: 0,
+            right: 0,
+            up: 0,
+            down: 0,
+        }
+        this._buttonState = {
+            left: 0,
+            right: 0,
+            up: 0,
+            down: 0,
+        }
+    }
+
+    arrowPress(direction: 'left' | 'right' | 'up' | 'down') {
+        this._buttonState[direction] = 1
+    }
+
+    arrowRelease(direction: 'left' | 'right' | 'up' | 'down') {
+        this._buttonState[direction] = 0
+    }
+
+    toggleMirror() {
+        const { mirror } = this.state.config
+        this.state.config.mirror = !mirror
     }
 
     setYInputs() {
@@ -78,14 +106,15 @@ export class DetectionState {
             yUpperRange,
             yCenter
         )
-        if (keyboardState.up
-            || keyboardState.down
+        const buttonState = this.buttonState
+        if (buttonState.up
+            || buttonState.down
             || !yIsCenter
         ) {
             const camUp: number = yCenter < yLowerRange ? 1 : 0
             const camDown: number = yCenter > yUpperRange ? 1 : 0
-            const up: number = camUp || keyboardState.up ? 1 : 0
-            const down: number = camDown || keyboardState.down ? 1 : 0
+            const up: number = camUp || buttonState.up ? 1 : 0
+            const down: number = camDown || buttonState.down ? 1 : 0
             this.state.input.up = up
             this.state.input.down = down
         } else {
@@ -97,10 +126,11 @@ export class DetectionState {
     setXInputs() {
         const { config, detection } = this.state
         const { mirror } = config
-        if (keyboardState.left || keyboardState.right ) {
-            this.state.input.left = keyboardState.left ? 1 : 0
-            this.state.input.right = keyboardState.right ? 1 : 0
-            this.state.input.center = (keyboardState.left || keyboardState.right) ? 0 : 1
+        const buttonState = this.buttonState
+        if (buttonState.left || buttonState.right ) {
+            this.state.input.left = buttonState.left ? 1 : 0
+            this.state.input.right = buttonState.right ? 1 : 0
+            this.state.input.center = (buttonState.left || buttonState.right) ? 0 : 1
             return
         }
         const xCenter = detectionsToBboxCenter(detection)
@@ -144,6 +174,23 @@ export class DetectionState {
     }
 
     setInputs() {
+        let nextButtonState = {
+            left: 0,
+            right: 0,
+            up: 0,
+            down: 0,
+        }
+        for (let key in keyboardState) {
+            const keyValue = keyboardState[key]
+            if (keyValue) {
+                nextButtonState[key] = 1
+            } else if (this._buttonState[key] > 0) {
+                nextButtonState[key] = 1
+            } else {
+                nextButtonState[key] = 0
+            }
+        }
+        this.buttonState = {...this._buttonState, ...nextButtonState}
         this.setYInputs()
         this.setXInputs()
         return this
@@ -252,7 +299,7 @@ function detectionsToBboxCenter(detections: Detection[]): number | null {
 }
 
 function detectionsToY(detections: Detection[]): number | null {
-if (!detections.length) {
+    if (!detections.length) {
         return null
     }
     const detection: Detection = detections[0]

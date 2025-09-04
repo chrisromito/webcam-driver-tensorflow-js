@@ -18,6 +18,13 @@ export type Ixy = { x: number, y: number }
 
 export type IDirection = -1 | 0 | 1
 
+export type IInputValue = {
+    left: number,
+    right: number,
+    up: number,
+    down: number
+}
+
 export type IInput = {
     left: number,
     right: number,
