@@ -1,7 +1,7 @@
 import './style.css'
-import { Arrows } from './libs/dom'
+import { Arrows, hide } from './libs/dom'
 import FlipIcon from './assets/flip_camera_ios_icon.svg'
-import { initializeFaceDetector, enableWebcam, detect, renderDetections } from './detection'
+import { initializeFaceDetector, detect, renderDetections } from './detection'
 import { DetectionState } from './detection/detectionState'
 import { IStatus } from './detection/types'
 
@@ -11,8 +11,13 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div class="app-container">
     <div class="input-container">
       <div class="webcam-input">
+        <button id="enable">
+          Give Video Access
+        </button>
         <canvas id="canvas" class="webcam-render"  width="250" height="200"></canvas>
-        <video id="video" class="webcam-visual" autoplay playsinline></video>
+        <video id="video" class="webcam-visual" autoplay playsinline>
+          Video stream not available.
+        </video>
       </div>
       <div class="input-config">
         <div class="mirror-button-container i-flex justify-center p2">
@@ -35,69 +40,91 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 `
 
 const detectionState = new DetectionState()
-// @ts-ignore
-const video: HTMLVideoElement | null = document.getElementById('video')
+
+const canvas = document.getElementById('canvas')
+const mirrorButton = document.getElementById('mirror-button')
+const allowButton = document.getElementById('enable')
+allowButton.addEventListener('click', () => {
+    onAllow()
+})
 
 
 function onMirrorButtonClick() {
-  detectionState.toggleMirror()
+    detectionState.toggleMirror()
 }
 
-const mirrorButton = document.getElementById('mirror-button')
 mirrorButton?.addEventListener('click', onMirrorButtonClick)
 if (mirrorButton) {
-  mirrorButton.style.backgroundImage = `url("${FlipIcon}")`
+    mirrorButton.style.backgroundImage = `url("${FlipIcon}")`
 }
 
 // Add event listeners for Arrows
 
+async function onAllow() {
+    // @ts-ignore
+    const video: HTMLVideoElement = document.getElementById('video')
+    const width = canvas.offsetWidth
+    const height = canvas.offsetHeight
+    const constraints = { video: { width, height }, audio: false }
+    const stream = await navigator.mediaDevices.getUserMedia(constraints)
+    video.srcObject = stream
+    await new Promise(resolve => {
+        video.onloadedmetadata = () => {
+            video.play()
+            resolve(true)
+        }
+    })
+    hide(allowButton)
+    return main()
+}
 
 
 async function main() {
-  if (!video) {
-    return
-  }
-  detectionState.setStatus(IStatus.PENDING)
-  const stream = await enableWebcam(video, canvas.offsetWidth, canvas.offsetHeight)
-  Arrows.setUpListeners(detectionState)
-  detectionState.setStatus(IStatus.ACCEPTED)
-  detectionState.setupKeyListeners()
-
-  const detector = await initializeFaceDetector()
-  await configStepLoop(detector)
-
-  const carGame = await import('./carGame').then((m)=> m.default)
-  carGame('game-container', detectionState)
-
-  let loopCounter = 0
-  while (detectionState.state.status !== IStatus.ERROR) {
-    await detectionLoop(detector, loopCounter)
-    if (loopCounter > 0) {
-      loopCounter = 0
+    // @ts-ignore
+    const video: HTMLVideoElement = document.getElementById('video')
+    if (!video) {
+        return
     }
-    else {
-      loopCounter++
+    detectionState.setStatus(IStatus.PENDING)
+    Arrows.setUpListeners(detectionState)
+    detectionState.setStatus(IStatus.ACCEPTED)
+    detectionState.setupKeyListeners()
+
+    const detector = await initializeFaceDetector()
+    await configStepLoop(video, detector)
+    hide(video)
+    const carGame = await import('./carGame').then((m) => m.default)
+    carGame('game-container', detectionState)
+
+    let loopCounter = 0
+    while (detectionState.state.status !== IStatus.ERROR) {
+        await detectionLoop(video, detector, loopCounter)
+        if (loopCounter > 0) {
+            loopCounter = 0
+        }
+        else {
+            loopCounter++
+        }
     }
-  }
 }
 
 /**
  * Config Steps
  */
-async function configStepLoop(detector) {
-  if (canvas) {
-    detectionState.setCenter(canvas.offsetWidth, canvas.offsetHeight)
-  }
-  try {
-    const detections = detect(video, detector)
-    detectionState.configCenter(detections, canvas.offsetWidth, canvas.offsetHeight)
-    await sleep(100)
-    await detectionLoop(detector, 1)
-  } catch (error) {
-    console.error(error)
-    return false
-  }
-  return true
+async function configStepLoop(video: HTMLVideoElement, detector) {
+    if (canvas) {
+        detectionState.setCenter(canvas.offsetWidth, canvas.offsetHeight)
+    }
+    try {
+        const detections = detect(video, detector)
+        detectionState.configCenter(detections, canvas.offsetWidth, canvas.offsetHeight)
+        await sleep(100)
+        await detectionLoop(video, detector, 1)
+    } catch (error) {
+        console.error(error)
+        return false
+    }
+    return true
 }
 
 
@@ -105,38 +132,37 @@ async function configStepLoop(detector) {
  * MAIN DETECTION LOOP
  */
 
-const canvas = document.getElementById('canvas')
 
-async function detectionLoop(detector, loopCounter: number = 0) {
-  const detections = detect(video, detector)
-  detectionState.state.detection = detections
-  detectionState.setInputs()
-  await nextTick()
-  if (loopCounter > 0) {
-    // @ts-ignore
-    const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
-    renderDetections(ctx, video, detections, detectionState)
-  } else {
-    renderArrows(detectionState)
-  }
+async function detectionLoop(video: HTMLVideoElement, detector, loopCounter: number = 0) {
+    const detections = detect(video, detector)
+    detectionState.state.detection = detections
+    detectionState.setInputs()
+    await nextTick()
+    if (loopCounter > 0) {
+        // @ts-ignore
+        const ctx: CanvasRenderingContext2D = canvas.getContext('2d')
+        renderDetections(ctx, video, detections, detectionState)
+    } else {
+        renderArrows(detectionState)
+    }
 }
 
 
 function renderArrows(dState: DetectionState) {
-  Arrows.update(dState.state.input)
+    Arrows.update(dState.state.input)
 }
 
 
 async function nextTick(): Promise<boolean> {
-  return await new Promise((resolve)=> {
-    requestAnimationFrame(()=> resolve(true))
-  })
+    return await new Promise((resolve) => {
+        requestAnimationFrame(() => resolve(true))
+    })
 }
 
 async function sleep(ms: number) {
-  return await new Promise((resolve) => {
-    setTimeout(() => resolve(true), ms)
-  })
+    return await new Promise((resolve) => {
+        setTimeout(() => resolve(true), ms)
+    })
 }
 
-main()
+// main()

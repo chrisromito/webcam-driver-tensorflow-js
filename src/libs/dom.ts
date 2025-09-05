@@ -67,10 +67,19 @@ export const Arrows = {
             if (!(element && direction)) {
                 return
             }
-            element.onmousedown = ()=> detectionState.arrowPress(direction)
-            element.ontouchstart = ()=> detectionState.arrowPress(direction)
-            element.onmouseup = ()=> detectionState.arrowRelease(direction)
-            element.ontouchend = ()=> detectionState.arrowRelease(direction)
+            const onPress = (event)=> {
+                event.preventDefault()
+                detectionState.arrowPress(direction)
+            }
+
+            const onRelease = (event)=> {
+                event.preventDefault()
+                detectionState.arrowRelease(direction)
+            }
+            element.onmousedown = onPress
+            element.ontouchstart = onPress
+            element.onmouseup = onRelease
+            element.ontouchend = onRelease
         })
     }
 }

@@ -32,14 +32,6 @@ export async function initializeFaceDetector(): Promise<TFaceDetector> {
 }
 
 
-export async function enableWebcam(video: HTMLVideoElement, width: number, height: number): Promise<MediaStream> {
-    const constraints = { video: { width, height }, audio: false }
-    const stream = await navigator.mediaDevices.getUserMedia(constraints)
-    video.srcObject = stream
-    return stream
-}
-
-
 export function detect(video: HTMLVideoElement, { faceDetector }: TFaceDetector): Detection[] {
     let startTimeMs = performance.now()
     return faceDetector.detectForVideo(video, startTimeMs).detections
@@ -55,7 +47,7 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
     const height = canvas.offsetHeight
     ctx.drawImage(video, 0, 0, width, height)
 
-    
+
 
     // Draw vertical center rect (width / 5)
     ctx.beginPath()
@@ -88,7 +80,7 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
     }
     const detection: Detection = detections[0]
     const { categories, boundingBox, keypoints } = detection
-    
+
 
     const inputs = detectionState.state.input
     const inputTexts = [
@@ -97,16 +89,16 @@ export function renderDetections(ctx: CanvasRenderingContext2D, video: HTMLVideo
         `Up: ${displayPercent(inputs.up)}`,
         `Down: ${displayPercent(inputs.down)}`
     ]
-    inputTexts.forEach((value: string, index: number)=> {
+    inputTexts.forEach((value: string, index: number) => {
         ctx.font = '12px sans-serif'
         ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
         const yOffset = (index + 1) * 15
         const y = height - yOffset
         ctx.fillText(value, 5, y)
     })
-    
+
     ctx.globalAlpha = 0.2
-    
+
     if (boundingBox) {
         ctx.beginPath()
         ctx.lineWidth = 4
