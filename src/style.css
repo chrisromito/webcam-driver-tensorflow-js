@@ -342,7 +342,7 @@ button:focus-visible {
 }
 
 .webcam-input video {
-  display: none;
+  /* display: none; */
 }
 
 .webcam-input canvas {

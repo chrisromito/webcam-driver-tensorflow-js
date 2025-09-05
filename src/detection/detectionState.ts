@@ -175,10 +175,10 @@ export class DetectionState {
 
     setInputs() {
         let nextButtonState = {
-            left: 0,
-            right: 0,
-            up: 0,
-            down: 0,
+            // left: 0,
+            // right: 0,
+            // up: 0,
+            // down: 0,
         }
         for (let key in keyboardState) {
             const keyValue = keyboardState[key]
@@ -186,8 +186,6 @@ export class DetectionState {
                 nextButtonState[key] = 1
             } else if (this._buttonState[key] > 0) {
                 nextButtonState[key] = 1
-            } else {
-                nextButtonState[key] = 0
             }
         }
         this.buttonState = {...this._buttonState, ...nextButtonState}
